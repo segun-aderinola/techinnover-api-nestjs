@@ -52,8 +52,10 @@ export class ProductService {
     }
   }
 
-  async approveProduct(id: number): Promise<Product> {
-    const product = await this.productRepository.findOne(id);
+  async approveProduct(userId: number): Promise<Product> {
+    const product = await this.productRepository.findOne({
+      where: { id: userId },
+    });
     if (!product) {
       throw new NotFoundException('Product not found');
     }

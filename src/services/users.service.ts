@@ -33,8 +33,10 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async banUser(id: number): Promise<void> {
-    const user = await this.userRepository.findOne(id);
+  async banUser(userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -42,8 +44,10 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
-  async unbanUser(id: number): Promise<void> {
-    const user = await this.userRepository.findOne(id);
+  async unbanUser(userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }

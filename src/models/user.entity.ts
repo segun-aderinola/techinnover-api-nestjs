@@ -24,5 +24,5 @@ export class User {
 
   @Column({ default: false })
   isBanned: boolean;
-    products: any;
+  products: any;
 }
