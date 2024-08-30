@@ -1,8 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from '../models/user.entity';
 import * as bcrypt from 'bcrypt';
+import { ValidateSignUpPayload } from 'src/validators/userSignUp.validate';
+import {
+  ApiResponse,
+  errorResponse,
+  successResponse,
+} from 'src/utils/response.util';
 
 @Injectable()
 export class UserService {
@@ -12,17 +22,28 @@ export class UserService {
   ) {}
 
   async createUser(
-    name: string,
-    email: string,
-    password: string,
-  ): Promise<User> {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    userPayload: ValidateSignUpPayload,
+  ): Promise<ApiResponse<User> | ApiResponse<null>> {
+    const existingUser = await this.userRepository.findOne({
+      where: { email: userPayload.email },
+    });
+    if (existingUser) {
+      return errorResponse('Email already in use');
+    }
+    const hashedPassword = await bcrypt.hash(userPayload.password, 10);
     const user = this.userRepository.create({
-      name,
-      email,
+      name: userPayload.name,
+      email: userPayload.email,
       password: hashedPassword,
     });
-    return this.userRepository.save(user);
+
+    const savedUser = await this.userRepository.save(user); // Await the save operation
+
+    if (savedUser) {
+      return successResponse('User registered successfully', savedUser);
+    }
+
+    return errorResponse('User registration failed');
   }
 
   async findUserByEmail(email: string): Promise<User> {

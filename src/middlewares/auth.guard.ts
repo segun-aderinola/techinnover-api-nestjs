@@ -16,6 +16,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
     if (user.isBanned) {
       throw new UnauthorizedException('User is banned');
     }

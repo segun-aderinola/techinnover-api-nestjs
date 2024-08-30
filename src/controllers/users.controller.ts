@@ -1,9 +1,20 @@
-import { Controller, Post, Body, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UserService } from '../services/users.service';
 import { JwtAuthGuard } from '../middlewares/auth.guard';
 import { RolesGuard } from '../middlewares/roles.guard';
 import { Roles } from '../middlewares/roles.decorator';
 import { UserRole } from '../models/user.entity';
+import { ValidateSignUpPayload } from 'src/validators/userSignUp.validate';
+import { successResponse } from '../utils/response.util';
 
 @Controller('users')
 export class UserController {
@@ -11,10 +22,9 @@ export class UserController {
 
   // POST /users
   @Post()
-  async register(
-    @Body() body: { name: string; email: string; password: string },
-  ) {
-    return this.userService.createUser(body.name, body.email, body.password);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async register(@Body() validateSignUpPayload: ValidateSignUpPayload) {
+    return this.userService.createUser(validateSignUpPayload);
   }
 
   // GET /users
@@ -40,4 +50,8 @@ export class UserController {
   async unbanUser(@Param('id') id: number) {
     return this.userService.unbanUser(id);
   }
+}
+
+function findAll() {
+  throw new Error('Function not implemented.');
 }

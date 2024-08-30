@@ -1,17 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// import { ConfigModule } from '@nestjs/config';
-import { UserController } from './controllers/users.controller';
-import { ProductController } from './controllers/products.controller';
-// import { AppService } from './app.service';
-import { UserService } from './services/users.service';
-import { ProductService } from './services/products.service';
+import { ConfigModule } from '@nestjs/config';
+
 import { UsersModule } from './modules/users.module';
 import { ProductsModule } from './modules/products.module';
+// import { AppService } from './app.service';  // Uncomment if AppService is used
 
 @Module({
   imports: [
-    // ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -25,7 +22,7 @@ import { ProductsModule } from './modules/products.module';
     UsersModule,
     ProductsModule,
   ],
-  controllers: [UserController, ProductController],
-  providers: [ProductService, UserService],
+  // controllers: [UserController, ProductController], // Typically, controllers are added in feature modules
+  // providers: [ProductService, UserService], // Services are typically added in feature modules
 })
 export class AppModule {}
