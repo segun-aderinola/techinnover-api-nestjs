@@ -1,14 +1,31 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { UsersModule } from './modules/users.module';
 import { ProductsModule } from './modules/products.module';
+import { JwtModule } from '@nestjs/jwt';
 // import { AppService } from './app.service';  // Uncomment if AppService is used
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env', // Make sure this points to the correct path of your .env file
+    }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        //const secret = configService.get<string>('JWT_SECRET');
+        const jwtSecret = process.env.JWT_SECRET;
+        console.log('JWT_SECRET:', jwtSecret); // Add this line to log the secret
+        return {
+          jwtSecret,
+          signOptions: { expiresIn: '1h' },
+        };
+      },
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,

@@ -2,6 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../services/users.service';
 import * as bcrypt from 'bcrypt';
+import { errorResponse, successResponse } from 'src/utils/response.util';
+import { ValidateLoginPayload } from 'src/validators/userLogin.validate copy';
 
 @Injectable()
 export class AuthService {
@@ -20,13 +22,21 @@ export class AuthService {
       const { password, ...result } = user;
       return result;
     }
-    throw new UnauthorizedException();
+    return errorResponse('Invalid credential');
   }
 
-  async login(user: any) {
-    const payload = { username: user.email, sub: user.id, role: user.role };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+  async login(loginRequest: ValidateLoginPayload) {
+    const user = await this.validateUser(
+      loginRequest.email,
+      loginRequest.password,
+    );
+    const jwtSecret = process.env.JWT_SECRET;
+    const token = this.jwtService.sign(
+      { email: user.email, sub: user.id },
+      {
+        secret: jwtSecret,
+      },
+    );
+    return successResponse('Login Successful', { user, token });
   }
 }

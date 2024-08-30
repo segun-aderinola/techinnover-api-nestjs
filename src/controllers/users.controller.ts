@@ -15,16 +15,27 @@ import { Roles } from '../middlewares/roles.decorator';
 import { UserRole } from '../models/user.entity';
 import { ValidateSignUpPayload } from 'src/validators/userSignUp.validate';
 import { successResponse } from '../utils/response.util';
+import { ValidateLoginPayload } from 'src/validators/userLogin.validate copy';
+import { AuthService } from 'src/services/auth.service';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   // POST /users
-  @Post()
+  @Post('/signup')
   @UsePipes(new ValidationPipe({ transform: true }))
   async register(@Body() validateSignUpPayload: ValidateSignUpPayload) {
     return this.userService.createUser(validateSignUpPayload);
+  }
+
+  @Post('/login')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async login(@Body() validateLoginPayload: ValidateLoginPayload) {
+    return this.authService.login(validateLoginPayload);
   }
 
   // GET /users
