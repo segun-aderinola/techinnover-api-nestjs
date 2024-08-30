@@ -15,7 +15,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-
     if (!user) {
       throw new UnauthorizedException('User not found');
     }

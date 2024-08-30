@@ -3,19 +3,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from '../models/user.entity';
 import * as bcrypt from 'bcrypt';
 import { ValidateSignUpPayload } from 'src/validators/userSignUp.validate';
-import {
-  ApiResponse,
-  errorResponse,
-  successResponse,
-} from 'src/utils/response.util';
+import { errorResponse, successResponse } from 'src/utils/response.util';
 
 @Injectable()
 export class UserService {
+  findUserById(sub: any) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -23,13 +23,17 @@ export class UserService {
 
   async createUser(
     userPayload: ValidateSignUpPayload,
-  ): Promise<ApiResponse<User> | ApiResponse<null>> {
+    res: Response,
+  ): Promise<void> {
+    // Change the return type to `void` since we're handling the response directly
     const existingUser = await this.userRepository.findOne({
       where: { email: userPayload.email },
     });
+
     if (existingUser) {
-      return errorResponse('Email already in use');
+      return errorResponse(res, 'Email already in use'); // Pass `res` to `errorResponse`
     }
+
     const hashedPassword = await bcrypt.hash(userPayload.password, 10);
     const user = this.userRepository.create({
       name: userPayload.name,
@@ -40,10 +44,10 @@ export class UserService {
     const savedUser = await this.userRepository.save(user); // Await the save operation
 
     if (savedUser) {
-      return successResponse('User registered successfully', savedUser);
+      return successResponse(res, 'User registered successfully', savedUser); // Pass `res` to `successResponse`
     }
 
-    return errorResponse('User registration failed');
+    return errorResponse(res, 'User registration failed'); // Pass `res` to `errorResponse`
   }
 
   async findUserByEmail(email: string): Promise<User> {

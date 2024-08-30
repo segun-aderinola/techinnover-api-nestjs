@@ -1,8 +1,12 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../services/users.service';
 import * as bcrypt from 'bcrypt';
-import { errorResponse, successResponse } from 'src/utils/response.util';
 import { ValidateLoginPayload } from 'src/validators/userLogin.validate copy';
 
 @Injectable()
@@ -14,29 +18,35 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findUserByEmail(email);
-    if (
-      user &&
-      !user.isBanned &&
-      (await bcrypt.compare(password, user.password))
-    ) {
-      const { password, ...result } = user;
-      return result;
+    if (!user) {
+      throw new NotFoundException('Invalid Email address');
     }
-    return errorResponse('Invalid credential');
+    if (user.isBanned) {
+      throw new ForbiddenException(
+        'Your account has been banned. Please contact the admin',
+      );
+    }
+    if (!(await bcrypt.compare(password, user.password))) {
+      throw new UnauthorizedException('Invalid Password');
+    }
+
+    const { password: _, ...result } = user;
+    return result;
   }
 
-  async login(loginRequest: ValidateLoginPayload) {
+  async login(
+    loginRequest: ValidateLoginPayload,
+  ): Promise<{ user: any; token: string }> {
     const user = await this.validateUser(
       loginRequest.email,
       loginRequest.password,
     );
-    const jwtSecret = process.env.JWT_SECRET;
     const token = this.jwtService.sign(
-      { email: user.email, sub: user.id },
+      { email: user.email, sub: user.id, role: user.role },
       {
-        secret: jwtSecret,
+        secret: process.env.JWT_SECRET, // The secret should be properly configured in the JwtModule
       },
     );
-    return successResponse('Login Successful', { user, token });
+    return { user, token };
   }
 }
