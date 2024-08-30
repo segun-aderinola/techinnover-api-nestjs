@@ -58,6 +58,13 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JwtMiddleware)
-      .forRoutes({ path: 'users', method: RequestMethod.GET }); // Apply to specific path(s)
+      .forRoutes(
+        { path: 'users', method: RequestMethod.GET },
+        { path: 'users/:id/ban-and-unban', method: RequestMethod.POST },
+        { path: 'products/', method: RequestMethod.POST },
+        { path: 'products/', method: RequestMethod.GET },
+        { path: 'products/:id/approve', method: RequestMethod.POST },
+        { path: 'products/:id', method: RequestMethod.DELETE },
+      );
   }
 }

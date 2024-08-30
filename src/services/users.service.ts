@@ -58,14 +58,22 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async banUser(userId: number): Promise<void> {
+  async banAndUnbanUser(
+    userId: number,
+    action: string,
+    res: Response,
+  ): Promise<void> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      return errorResponse(res, 'User not found');
     }
-    user.isBanned = true;
+    if (action == 'ban') {
+      user.isBanned = true;
+    } else {
+      user.isBanned = false;
+    }
     await this.userRepository.save(user);
   }
 

@@ -7,6 +7,9 @@ export class Product {
   id: number;
 
   @Column()
+  user_id: number;
+
+  @Column()
   name: string;
 
   @Column('text')

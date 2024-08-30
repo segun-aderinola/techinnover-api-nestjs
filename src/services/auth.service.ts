@@ -42,7 +42,7 @@ export class AuthService {
       loginRequest.password,
     );
     const token = this.jwtService.sign(
-      { email: user.email, sub: user.id, role: user.role },
+      { email: user.email, sub: user.id, role: user.role, id: user.id },
       {
         secret: process.env.JWT_SECRET, // The secret should be properly configured in the JwtModule
       },
