@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from '../models/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Product {
@@ -17,6 +17,9 @@ export class Product {
 
   @Column('decimal')
   price: number;
+
+  @Column({ nullable: true })
+  quantity: number | null;
 
   @Column({ default: false })
   approved: boolean;

@@ -6,9 +6,9 @@ import {
 import { Response } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User, UserRole } from '../models/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { ValidateSignUpPayload } from 'src/validators/userSignUp.validate';
+import { ValidateSignUpPayload } from 'src/users/dto/user-signup-payload';
 import { errorResponse, successResponse } from 'src/utils/response.util';
 
 @Injectable()

@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Product } from '../models/product.entity';
-import { User } from '../models/user.entity';
+import { Product } from './entities/product.entity';
+import { User } from '../users/entities/user.entity';
 import { Response } from 'express';
 import { errorResponse, successResponse } from 'src/utils/response.util';
+import { ProductPayload } from './dto/create-product-payload';
 
 @Injectable()
 export class ProductService {
@@ -14,16 +15,15 @@ export class ProductService {
   ) {}
 
   async createProduct(
-    name: string,
-    description: string,
-    price: number,
+    data: ProductPayload,
     owner: User,
     res: Response,
   ): Promise<void> {
     const product = this.productRepository.create({
-      name,
-      description,
-      price,
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      quantity: data.quantity,
       user_id: owner.id,
       owner,
     });

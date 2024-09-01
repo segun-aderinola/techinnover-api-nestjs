@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RouterModule, Routes } from 'nest-router';
-import { UsersModule } from 'src/modules/users.module';
+import { UsersModule } from 'src/users/users.module';
 
 const routes: Routes = [
   {

@@ -2,14 +2,14 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { UsersModule } from './modules/users.module';
-import { ProductsModule } from './modules/products.module';
+import { UsersModule } from './users/users.module';
+import { ProductsModule } from './products/products.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './utils/jwt.strategy';
-import { ProductService } from './services/products.service';
-import { UserService } from './services/users.service';
-import { UserController } from './controllers/users.controller';
-import { ProductController } from './controllers/products.controller';
+import { ProductService } from './products/products.service';
+import { UserService } from './users/users.service';
+import { UserController } from './users/users.controller';
+import { ProductController } from './products/products.controller';
 import { JwtMiddleware } from './middlewares/jwtMiddleware';
 
 // import { AppService } from './app.service';  // Uncomment if AppService is used

@@ -5,9 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../services/users.service';
+import { UserService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { ValidateLoginPayload } from 'src/validators/userLogin.validate copy';
+import { ValidateLoginPayload } from 'src/users/dto/user-login-payload';
 
 @Injectable()
 export class AuthService {
